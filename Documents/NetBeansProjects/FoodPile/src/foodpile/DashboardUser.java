@@ -199,9 +199,9 @@ public class DashboardUser extends javax.swing.JFrame {
 
     private void button_logoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_logoutActionPerformed
         // TODO add your handling code here:
-        Login.loggedInUser="";
-        Login obj=new Login();
-        obj.setVisible(true);
+//        Login.loggedInUser="";
+//        Login obj=new Login();
+//        obj.setVisible(true);
         setVisible(false);
     }//GEN-LAST:event_button_logoutActionPerformed
 

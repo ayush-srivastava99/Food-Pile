@@ -21,7 +21,7 @@ public final class JdbcConnection {
      * 
      */
     public static final String classForName="com.mysql.cj.jdbc.Driver";
-    public static final String getConnection = "jdbc:mysql://localhost:3306/Passenger";
+    public static final String getConnection = "jdbc:mysql://localhost:3306/FoodPile";
     public static final String username="root";
     public static final String password="";
 }

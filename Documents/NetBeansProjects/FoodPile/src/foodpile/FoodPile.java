@@ -18,8 +18,10 @@ public class FoodPile {
         // TODO code application logic here
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                DashboardUser obj=new DashboardUser();
-                obj.setVisible(true);
+//                DashboardUser obj=new DashboardUser();
+//                obj.setVisible(true);
+                  Login log = new Login();
+                  log.setVisible(true);
 //                this.dispose();
             }
         });
