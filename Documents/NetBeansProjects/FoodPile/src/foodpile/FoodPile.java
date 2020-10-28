@@ -7,7 +7,7 @@ package foodpile;
 
 /**
  *
- * @author Sharma's
+ * @author Harsh
  */
 public class FoodPile {
 

@@ -17,27 +17,33 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import javax.swing.JOptionPane;
 import javax.swing.table.*;
-import java.util.Date; 
+import java.util.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import javax.sql.rowset.CachedRowSet;
+import static foodpile.JdbcConnection.classForName;
+import static foodpile.JdbcConnection.getConnection;
+import static foodpile.JdbcConnection.password;
+import static foodpile.JdbcConnection.username;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 /**
  *
  * @author iayus
  */
-public class DashboardUser extends javax.swing.JFrame {
+public class DashboardFood extends javax.swing.JFrame {
 
     /**
      * Creates new form Dashboarduser
      */
-    public DashboardUser() {
+    public DashboardFood() {
         initComponents();
-//        jLabel1.setText("Welcome  "+Login.loggedInUser+"");
+        jLabel1.setText("Welcome  " + Login.loggedInUser + "");
         Toolkit toolkit = getToolkit();
         Dimension dim = toolkit.getScreenSize();
-        setLocation(dim.width/2-getWidth()/2,dim.height/2-getHeight()/2); 
+        setLocation(dim.width / 2 - getWidth() / 2, dim.height / 2 - getHeight() / 2);
 
     }
 
@@ -52,8 +58,7 @@ public class DashboardUser extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        button_logout = new javax.swing.JButton();
-        button_change_password = new javax.swing.JButton();
+        button_dashboard = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         add_item = new javax.swing.JButton();
         update_item = new javax.swing.JButton();
@@ -82,21 +87,13 @@ public class DashboardUser extends javax.swing.JFrame {
         jLabel1.setText("Welcome ");
         jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 20, 450, 50));
 
-        button_logout.setText("Logout");
-        button_logout.addActionListener(new java.awt.event.ActionListener() {
+        button_dashboard.setText("Dashboard");
+        button_dashboard.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                button_logoutActionPerformed(evt);
+                button_dashboardActionPerformed(evt);
             }
         });
-        jPanel1.add(button_logout, new org.netbeans.lib.awtextra.AbsoluteConstraints(1130, 10, 140, 30));
-
-        button_change_password.setText("Change Password");
-        button_change_password.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                button_change_passwordActionPerformed(evt);
-            }
-        });
-        jPanel1.add(button_change_password, new org.netbeans.lib.awtextra.AbsoluteConstraints(1130, 50, 140, 30));
+        jPanel1.add(button_dashboard, new org.netbeans.lib.awtextra.AbsoluteConstraints(1123, 20, 120, 40));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1290, 140));
 
@@ -109,7 +106,7 @@ public class DashboardUser extends javax.swing.JFrame {
                 add_itemActionPerformed(evt);
             }
         });
-        jPanel2.add(add_item, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 30, 170, 30));
+        jPanel2.add(add_item, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, 170, 30));
 
         update_item.setText("Update food items");
         update_item.addActionListener(new java.awt.event.ActionListener() {
@@ -117,27 +114,35 @@ public class DashboardUser extends javax.swing.JFrame {
                 update_itemActionPerformed(evt);
             }
         });
-        jPanel2.add(update_item, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 30, 170, 30));
+        jPanel2.add(update_item, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 10, 170, 30));
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 2, 36)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(0, 0, 0));
         jLabel2.setText("Inventory Details");
         jPanel2.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 110, 330, 40));
 
-        table_inventory.setBackground(new java.awt.Color(102, 102, 102));
-        table_inventory.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
-        table_inventory.setForeground(new java.awt.Color(153, 153, 153));
+        table_inventory.setBackground(new java.awt.Color(255, 255, 204));
+        table_inventory.setFont(new java.awt.Font("Times New Roman", 0, 16)); // NOI18N
+        table_inventory.setForeground(new java.awt.Color(0, 0, 0));
         table_inventory.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "Category", "Name.", "Available Quantity", "Price per unit"
+                "Item Id", "Category", "Name", "Available Quantity", "Price oer unit", "Expiry Date"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         jScrollPane1.setViewportView(table_inventory);
 
-        jPanel2.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 230, 1200, 370));
+        jPanel2.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 230, 1200, 370));
 
         button_show_details.setText("Show");
         button_show_details.addActionListener(new java.awt.event.ActionListener() {
@@ -145,7 +150,7 @@ public class DashboardUser extends javax.swing.JFrame {
                 button_show_detailsActionPerformed(evt);
             }
         });
-        jPanel2.add(button_show_details, new org.netbeans.lib.awtextra.AbsoluteConstraints(880, 105, 80, 30));
+        jPanel2.add(button_show_details, new org.netbeans.lib.awtextra.AbsoluteConstraints(770, 110, 80, 30));
 
         jPanel4.setBackground(new java.awt.Color(255, 204, 204));
         jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -159,19 +164,19 @@ public class DashboardUser extends javax.swing.JFrame {
                 button_search_infoActionPerformed(evt);
             }
         });
-        jPanel4.add(button_search_info, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 140, 130, -1));
+        jPanel4.add(button_search_info, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 140, 110, -1));
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(0, 0, 0));
         jLabel3.setText("Get Storage Info");
         jPanel4.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 0, -1, -1));
-        jPanel4.add(tf_search_by, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 80, 130, 30));
+        jPanel4.add(tf_search_by, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 80, 130, 30));
 
         combo_box_search.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         combo_box_search.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Product Name", "Product Category" }));
-        jPanel4.add(combo_box_search, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 30, 130, 30));
+        jPanel4.add(combo_box_search, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 30, 160, 30));
 
-        jPanel2.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(1010, 10, 270, 200));
+        jPanel2.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(970, 10, 310, 200));
 
         remove_item.setText("Remove items");
         remove_item.setMaximumSize(new java.awt.Dimension(119, 29));
@@ -181,7 +186,7 @@ public class DashboardUser extends javax.swing.JFrame {
                 remove_itemActionPerformed(evt);
             }
         });
-        jPanel2.add(remove_item, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 30, 170, 30));
+        jPanel2.add(remove_item, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 10, 170, 30));
 
         jLabel4.setFont(new java.awt.Font("Gabriola", 1, 27)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(0, 0, 0));
@@ -197,48 +202,131 @@ public class DashboardUser extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void button_logoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_logoutActionPerformed
-        // TODO add your handling code here:
-//        Login.loggedInUser="";
-//        Login obj=new Login();
-//        obj.setVisible(true);
-        setVisible(false);
-    }//GEN-LAST:event_button_logoutActionPerformed
-
     private void button_show_detailsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_show_detailsActionPerformed
         // TODO add your handling code here: 
+        Connection con = null;
+        ResultSet rs = null;
+        DefaultTableModel model = (DefaultTableModel) table_inventory.getModel();
+        model.setRowCount(0);
+        String sort_order = (String) combo_box_apply_filter.getSelectedItem();
+
+        try {
+
+            Class.forName(classForName);
+            con = DriverManager.getConnection(getConnection, username, password);
+            String query = "";
+            if (sort_order.equals("Sort by Quantity")) {
+                query = "SELECT * FROM foodInventory WHERE username=? ORDER By item_quantity";
+            } else {
+                query = "SELECT * FROM foodInventory WHERE username=? ORDER By item_price";
+            }
+
+            PreparedStatement pst = con.prepareStatement(query);
+            pst.setString(1, Login.loggedInUser);
+            try (ResultSet result = pst.executeQuery()) {
+                while (result.next()) {
+                    int item_id = result.getInt("item_id");
+                    String category = result.getString("item_category");
+                    String name = result.getString("item_name");
+                    int quantity = result.getInt("item_quantity");
+                    int price = result.getInt("item_price");
+                    java.sql.Date expiry_date = result.getDate("item_expiry_date");
+
+                    model.addRow(new Object[]{item_id, category, name, quantity, price, expiry_date});
+
+                }
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+
+        }
+
+
     }//GEN-LAST:event_button_show_detailsActionPerformed
 
-    private void button_change_passwordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_change_passwordActionPerformed
-        // TODO add your handling code here:
-        
-    }//GEN-LAST:event_button_change_passwordActionPerformed
-    
     private void button_search_infoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_search_infoActionPerformed
         // TODO add your handling code here:
-       
+        DefaultTableModel model = (DefaultTableModel) table_inventory.getModel();
+        model.setRowCount(0);
+        String search_order = (String) combo_box_search.getSelectedItem();
+        Connection con = null;
+        ResultSet rs = null;
+        String detail = tf_search_by.getText();
+
+        if (detail.equals("")) {
+            JOptionPane.showMessageDialog(this, "Please provide the correct detail.");
+        } else {
+            try {
+
+                Class.forName(classForName);
+                con = DriverManager.getConnection(getConnection, username, password);
+                String query = "";
+                if (search_order.equals("Product Name")) {
+                    query = "SELECT * FROM foodInventory WHERE username=? AND item_name=?";
+                } else {
+                    query = "SELECT * FROM foodInventory WHERE username=? AND item_category=?";
+                }
+
+                PreparedStatement pst = con.prepareStatement(query);
+
+                pst.setString(1, Login.loggedInUser);
+                pst.setString(2, detail);
+                int flag=-1;
+                try (ResultSet result = pst.executeQuery()) {
+                    while (result.next()) {
+
+                        int item_id = result.getInt("item_id");
+                        String category = result.getString("item_category");
+                        String name = result.getString("item_name");
+                        int quantity = result.getInt("item_quantity");
+                        int price = result.getInt("item_price");
+                        java.sql.Date expiry_date = result.getDate("item_expiry_date");
+
+                        model.addRow(new Object[]{item_id, category, name, quantity, price, expiry_date});
+                        flag=0;
+                    }
+                    if(flag!=0)
+                    {
+                        JOptionPane.showMessageDialog(this, "No such item exists in your inventory.");
+        
+                    }
+                } catch (SQLException e) {
+                    System.out.println(e);
+                }
+            } catch (ClassNotFoundException | SQLException e) {
+                System.out.println(e);
+
+            }
+        }
+
     }//GEN-LAST:event_button_search_infoActionPerformed
 
     private void add_itemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_add_itemActionPerformed
         // TODO add your handling code here:
-        ItemsAdd obj=new ItemsAdd();
+        FoodItemsAdd obj = new FoodItemsAdd();
         obj.setVisible(true);
         setVisible(false);
     }//GEN-LAST:event_add_itemActionPerformed
 
     private void remove_itemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_remove_itemActionPerformed
         // TODO add your handling code here:
-        ItemsRemove obj = new ItemsRemove();
+        FoodItemsRemove obj = new FoodItemsRemove();
         obj.setVisible(true);
         dispose();
     }//GEN-LAST:event_remove_itemActionPerformed
 
     private void update_itemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_update_itemActionPerformed
         // TODO add your handling code here:
-        ItemsUpdate obj = new ItemsUpdate();
+        FoodItemsUpdate obj = new FoodItemsUpdate();
         obj.setVisible(true);
         dispose();
     }//GEN-LAST:event_update_itemActionPerformed
+
+    private void button_dashboardActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_dashboardActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_button_dashboardActionPerformed
 
     /**
      * @param args the command line arguments
@@ -246,8 +334,7 @@ public class DashboardUser extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton add_item;
-    private javax.swing.JButton button_change_password;
-    private javax.swing.JButton button_logout;
+    private javax.swing.JButton button_dashboard;
     private javax.swing.JButton button_search_info;
     private javax.swing.JButton button_show_details;
     private javax.swing.JComboBox<String> combo_box_apply_filter;

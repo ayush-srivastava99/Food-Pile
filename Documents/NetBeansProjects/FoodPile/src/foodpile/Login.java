@@ -239,7 +239,7 @@ public class Login extends javax.swing.JFrame {
             String stt="Yes";
                 if(st.equals(stt))
                 {
-                    DashboardUser obj=new DashboardUser();
+                    DashboardFood obj=new DashboardFood();
                     obj.setVisible(true);
                     setVisible(false);
                 }  

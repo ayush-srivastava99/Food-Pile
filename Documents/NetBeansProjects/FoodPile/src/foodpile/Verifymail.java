@@ -183,7 +183,7 @@ public class Verifymail extends javax.swing.JFrame {
                     pst1.setString(1, Login.loggedInUser);
                     pst1.executeUpdate();
             JOptionPane.showMessageDialog(null, "Your account has been verified. Enjoy the application");
-            DashboardUser obj=new DashboardUser();
+            DashboardFood obj=new DashboardFood();
             obj.setVisible(true);
             setVisible(false);
             }
